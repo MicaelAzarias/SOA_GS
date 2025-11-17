@@ -1,38 +1,89 @@
 DevForum API
 
-Sobre o Projeto
+📖 Sobre o Projeto
 
-O DevForum é uma API RESTful simples, construída com Spring Boot, projetada para ser um fórum de perguntas e respostas focado em dúvidas de programação. Ela permite que usuários postem suas dúvidas sobre uma linguagem ou tecnologia e recebam respostas de outros membros da comunidade.
+O DevForum é uma API RESTful simples, construída com Spring Boot, projetada para ser um fórum de perguntas e respostas focado em dúvidas de programação. Ela permite que usuários postem suas dúvidas sobre uma linguagem ou tecnologia e recebam respostas de outros membros da comunidade, contribuindo diretamente para os Objetivos de Desenvolvimento Sustentável (ODS) da ONU 4 (Educação de Qualidade), 8 (Trabalho Decente e Crescimento Econômico) e 9 (Indústria, Inovação e Infraestrutura).
 
-Este projeto utiliza Java 21, Spring Boot 3, Spring Security, JPA/Hibernate, MySQL e Flyway, e inclui um serviço de notificação por e-mail.
+Este projeto foi construído utilizando as práticas modernas de desenvolvimento Java, incluindo arquitetura em camadas, DTOs (Data Transfer Objects) na forma de Records, e gerenciamento de banco de dados com Flyway.
 
-Tecnologias Utilizadas
+🛠️ Tecnologias Utilizadas
 
-Java 21
+A stack principal do projeto inclui:
 
-Spring Boot 3.3.4
+Java 21 
 
-Spring Web: Criação de endpoints REST.
+Spring Boot 3.3.4 
 
-Spring Data JPA: Persistência de dados.
+Spring Web: Para criação de endpoints REST. 
 
-Spring Security: Camada de segurança (configurada para permitAll neste exemplo).
+Spring Data JPA: Para persistência de dados. 
 
-MySQL: Banco de dados relacional.
+Spring Security: Camada de segurança 
 
-Flyway: Versionamento e migração do esquema do banco de dados.
+MySQL: Banco de dados relacional. 
 
-Maven: Gerenciamento do projeto e dependências.
+Flyway: Para versionamento e migração do esquema do banco de dados. 
 
-Spring Boot Starter Mail: Serviço de envio de e-mail assíncrono.
+Maven: Gerenciador do projeto e dependências.
 
-Lombok: Redução de boilerplate (via pom.xml).
+Spring Boot Starter Mail: Serviço de envio de e-mail 
 
-Estrutura do Banco de Dados
+Lombok: Para redução de boilerplate
+
+🚀 Como Executar
+
+Pré-requisitos
+
+Java JDK 21 ou superior.
+
+Maven 3.8 ou superior.
+
+Um servidor MySQL em execução (ex: localhost:3306).
+
+1. Clone o Repositório
+
+git clone <url-do-seu-repositorio>
+cd devforum
+
+
+2. Configure o Banco de Dados
+
+Esta é a etapa mais importante. A aplicação precisa se conectar ao seu banco MySQL.
+
+⚠️ ATENÇÃO: Configure sua Senha!
+
+3. (Opcional) Configure o Serviço de E-mail
+
+O serviço de e-mail (EmailService) está configurado para ler credenciais de variáveis de ambiente. Se você quiser testar esta funcionalidade, configure as seguintes variáveis no seu sistema ou na sua IDE:
+
+EMAIL_USERNAME: Seu e-mail (ex: seu.email@gmail.com)
+
+EMAIL_PASSWORD: Sua senha de app do Gmail (ou a senha do seu provedor)
+
+4. Execute a Aplicação
+
+O Flyway cuidará automaticamente de criar as tabelas duvidas e respostas ao iniciar.
+
+Você pode rodar a aplicação de duas formas:
+
+Pelo Maven:
+
+mvn spring-boot:run
+
+
+Pela sua IDE (IntelliJ):
+
+Encontre a classe DevForumApplication.java.
+
+Clique com o botão direito e selecione Run 'DevForumApplication.main()'.
+
+A API estará disponível em http://localhost:8080.
+
+🗄️ Estrutura do Banco de Dados
 
 O banco é gerenciado pelo Flyway e possui duas tabelas:
 
-duvidas: Armazena as perguntas.
+duvidas 
 
 id (PK)
 
@@ -46,9 +97,9 @@ corpo_duvida (Text)
 
 data_criacao (Timestamp)
 
-status (Enum: ABERTA, RESPONDIDA, FECHADA)
+status (Enum: ABERTA, RESPONDIDA, FECHADA) 
 
-respostas: Armazena as respostas.
+respostas 
 
 id (PK)
 
@@ -62,103 +113,100 @@ duvida_id (FK para duvidas, com ON DELETE CASCADE)
 
 Endpoints da API
 
-Dúvidas (/duvidas)
+A segurança está configurada com permitAll(), então todos os endpoints estão abertos para teste.
 
-POST /duvidas
+Dúvidas (Prefixo: /duvidas)
 
-Descrição: Cadastra uma nova dúvida.
+Método
 
-Body: DadosCadastroDuvida
+Endpoint
 
-GET /duvidas
+Descrição
 
-Descrição: Lista todas as dúvidas de forma paginada.
+Body (JSON)
 
-Query Params: ?page=0&size=10&sort=dataCriacao,desc&status=ABERTA (status é opcional)
+POST
 
-Retorna: Page<DadosListagemDuvida>
+/
 
-GET /duvidas/{id}
+Cadastra uma nova dúvida.
 
-Descrição: Detalha uma dúvida específica e lista todas as suas respostas.
+DadosCadastroDuvida
 
-Retorna: DadosDetalhesDuvida
+GET
 
-PUT /duvidas
+/
 
-Descrição: Atualiza os dados de uma dúvida (título, corpo, linguagem).
+Lista todas as dúvidas (paginado).
 
-Body: DadosAtualizacaoDuvida
+N/A
 
-Retorna: DadosListagemDuvida
+GET
 
-DELETE /duvidas/{id}
+/{id}
 
-Descrição: Exclui uma dúvida e todas as suas respostas (cascade).
+Detalha uma dúvida e suas respostas.
 
-Retorna: 204 No Content
+N/A
 
-PATCH /duvidas/{id}/fechar
+PUT
 
-Descrição: Altera o status de uma dúvida para FECHADA.
+/
 
-Retorna: 204 No Content
+Atualiza uma dúvida (título, corpo, etc.).
 
-Respostas
+DadosAtualizacaoDuvida
 
-POST /duvidas/{idDuvida}/respostas
+DELETE
 
-Descrição: Cadastra uma nova resposta para uma dúvida. Notifica o autor da dúvida por e-mail (simulado).
+/{id}
 
-Body: DadosCadastroResposta
+Exclui uma dúvida (e suas respostas).
 
-Retorna: 201 Created com DadosListagemResposta
+N/A
 
-PUT /respostas
+PATCH
 
-Descrição: Atualiza o texto de uma resposta existente.
+/{id}/fechar
 
-Body: DadosAtualizacaoResposta
+Altera o status da dúvida para FECHADA.
 
-Retorna: DadosListagemResposta
+N/A
 
-DELETE /respostas/{id}
+POST
 
-Descrição: Exclui uma resposta específica.
+/{idDuvida}/respostas
 
-Retorna: 204 No Content
+Cadastra uma nova resposta para uma dúvida.
 
-Como Executar
+DadosCadastroResposta
 
-Clone o repositório:
+Exemplo GET /duvidas (com filtros):
 
-git clone <seu-repositorio>
-cd devforum
+http://localhost:8080/duvidas?page=0&size=10&sort=dataCriacao,desc&status=ABERTA
 
+Respostas (Prefixo: /respostas)
 
-Configure o application.properties:
+Método
 
-Abra src/main/resources/application.properties.
+Endpoint
 
-Configure a URL do seu banco MySQL, seu usuário e senha.
+Descrição
 
-spring.datasource.url=jdbc:mysql://localhost/dev_forum?createDatabaseIfNotExist=true
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
+Body (JSON)
 
+PUT
 
-Configure suas credenciais de e-mail (ex: Gmail) como variáveis de ambiente EMAIL_USERNAME e EMAIL_PASSWORD.
+/
 
-Execute a Aplicação:
+Atualiza o texto de uma resposta.
 
-O Flyway criará as tabelas automaticamente na primeira inicialização.
+DadosAtualizacaoResposta
 
-Use o Maven:
+DELETE
 
-mvn spring-boot:run
+/{id}
 
+Exclui uma resposta específica.
 
-Ou execute a classe DevForumApplication.java pela sua IDE.
-
-Acesse:
-A API estará disponível em http://localhost:8080.
+N/A
